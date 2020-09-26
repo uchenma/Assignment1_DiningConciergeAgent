@@ -140,7 +140,6 @@ async fn main() {
         data.iter()
             .map(|r| {
                 let businesses = r.as_ref().unwrap();
-                let cuisine = businesses.cuisine.clone();
                 println!(
                     "Number of items for cuisine {}: {}",
                     businesses.cuisine.clone(),
@@ -150,11 +149,7 @@ async fn main() {
                     .businesses
                     .iter()
                     .map(|business| {
-                        let cuisine = cuisine.clone();
-                        YelpBusiness {
-                            id: format!("{}-{}", business.id, cuisine),
-                            ..business.clone()
-                        }
+                            business.clone()
                     })
                     .collect();
                 res.into_iter()
