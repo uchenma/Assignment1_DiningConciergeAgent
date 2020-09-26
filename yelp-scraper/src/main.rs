@@ -49,8 +49,7 @@ async fn request_page_for_category(
         "https://api.yelp.com/v3/businesses/search?location=NYC&categories={}&limit={}&offset={}",
         category, YELP_SEARCH_LIMIT, offset
     );
-    let mut lock = ratelimit.lock().await;
-    lock.wait();
+     ratelimit.lock().await.wait();
     let yelp_response = client
         .get(&request_url)
         .header("Authorization", format!("Bearer {}", api_key))
@@ -91,7 +90,7 @@ async fn insert_records_into_dynamodb(
         creds,
         rusoto_core::region::Region::UsEast2,
     );
-    ratelimit.lock().await;
+     ratelimit.lock().await.wait();
     client
         .batch_write_item(BatchWriteItemInput {
             request_items: [(
