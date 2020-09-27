@@ -10,7 +10,7 @@ use elasticsearch::{
 use lambda_runtime::{error::HandlerError, lambda, Context};
 use log::{self};
 use serde::Serialize;
-use shared_types::YelpBusiness;
+use shared_types::{YelpBusiness, YelpBusinessEs};
 use simple_logger;
 use std::error::Error;
 
@@ -74,14 +74,25 @@ fn my_handler(
                         .collect(),
                 )
                 .unwrap();
-                let serialized = serde_json::to_value(&record_data).unwrap();
-                futures::executor::block_on(
-                    client
-                        .index(IndexParts::IndexId("yelp_restaurants", &record_data.id))
-                        .body(serialized)
-                        .send(),
-                )
-                .unwrap();
+                let dynamo_id = record_data.id.to_owned();
+                record_data
+                    .categories
+                    .iter()
+                    .map(|category| YelpBusinessEs {
+                        id: format!("{}-{}", dynamo_id, category.alias),
+                        dynamo_id: dynamo_id.to_owned(),
+                        cuisine: category.title.to_owned(),
+                    })
+                    .for_each(|item| {
+                        let serialized = serde_json::to_value(&item).unwrap();
+                        futures::executor::block_on(
+                            client
+                                .index(IndexParts::IndexId("yelp_restaurants", &record_data.id))
+                                .body(serialized)
+                                .send(),
+                        )
+                        .unwrap();
+                    })
             }
             Some(weird) => println!("Unexpected: {}", weird),
         }
