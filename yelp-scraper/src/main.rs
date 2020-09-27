@@ -1,14 +1,12 @@
 #![feature(async_closure)]
-use dynomite::{
-    dynamodb::{
-        BatchWriteItemError, BatchWriteItemInput, BatchWriteItemOutput, DynamoDb, DynamoDbClient,
-        PutRequest, WriteRequest,
-    },
+use dynomite::dynamodb::{
+    BatchWriteItemError, BatchWriteItemInput, BatchWriteItemOutput, DynamoDb, DynamoDbClient,
+    PutRequest, WriteRequest,
 };
 use itertools::Itertools;
 use serde::Deserialize;
+use shared_types::YelpBusiness;
 use std::time::Duration;
-use shared_types::{YelpBusiness};
 const YELP_SEARCH_LIMIT: usize = 50;
 const YELP_ITEMS_PER_CUISINE: u32 = 1000;
 
@@ -33,7 +31,7 @@ async fn request_page_for_category(
         "https://api.yelp.com/v3/businesses/search?location=NYC&categories={}&limit={}&offset={}",
         category, YELP_SEARCH_LIMIT, offset
     );
-     ratelimit.lock().await.wait();
+    ratelimit.lock().await.wait();
     let yelp_response = client
         .get(&request_url)
         .header("Authorization", format!("Bearer {}", api_key))
@@ -74,7 +72,7 @@ async fn insert_records_into_dynamodb(
         creds,
         rusoto_core::region::Region::UsEast2,
     );
-     ratelimit.lock().await.wait();
+    ratelimit.lock().await.wait();
     client
         .batch_write_item(BatchWriteItemInput {
             request_items: [(
@@ -132,9 +130,7 @@ async fn main() {
                 let res: Vec<_> = businesses
                     .businesses
                     .iter()
-                    .map(|business| {
-                            business.clone()
-                    })
+                    .map(|business| business.clone())
                     .collect();
                 res.into_iter()
             })
