@@ -1,0 +1,9 @@
+[package]
+name = "shared-types"
+version = "0.1.0"
+authors = ["Nigel Schuster <nigel.schusters@googlemail.com>"]
+edition = "2018"
+
+[dependencies]
+serde = {version = "1.0.116", features = ["derive"]}
+dynomite = "0.10.0"

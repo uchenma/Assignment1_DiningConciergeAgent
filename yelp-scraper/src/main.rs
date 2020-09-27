@@ -4,29 +4,13 @@ use dynomite::{
         BatchWriteItemError, BatchWriteItemInput, BatchWriteItemOutput, DynamoDb, DynamoDbClient,
         PutRequest, WriteRequest,
     },
-    Attributes, Item,
 };
 use itertools::Itertools;
 use serde::Deserialize;
 use std::time::Duration;
+use shared_types::{YelpBusiness};
 const YELP_SEARCH_LIMIT: usize = 50;
 const YELP_ITEMS_PER_CUISINE: u32 = 1000;
-#[derive(Attributes, Deserialize, Debug, Clone)]
-struct YelpCategory {
-    alias: String,
-    title: String,
-}
-#[derive(Item, Deserialize, Debug, Clone)]
-struct YelpBusiness {
-    #[dynomite(partition_key)]
-    id: String,
-    alias: String,
-    name: String,
-    image_url: String,
-    url: String,
-    categories: Vec<YelpCategory>,
-    rating: f32,
-}
 
 #[derive(Deserialize, Debug, Clone)]
 struct YelpResponse {

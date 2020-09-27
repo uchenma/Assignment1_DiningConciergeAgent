@@ -1,30 +1,18 @@
-use std::error::Error;
-
-use dynomite::{
-    Attributes, FromAttributes, Item,
+use dynomite::FromAttributes;
+use elasticsearch::{
+    auth::Credentials,
+    http::{
+        transport::{SingleNodeConnectionPool, TransportBuilder},
+        Url,
+    },
+    Elasticsearch, IndexParts,
 };
-use elasticsearch::{auth::Credentials,http::{Url,transport::{SingleNodeConnectionPool,TransportBuilder}}, Elasticsearch, IndexParts};
 use lambda_runtime::{error::HandlerError, lambda, Context};
 use log::{self};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
+use shared_types::YelpBusiness;
 use simple_logger;
-
-#[derive(Attributes, Deserialize, Serialize, Debug, Clone)]
-struct YelpCategory {
-    alias: String,
-    title: String,
-}
-#[derive(Item, Deserialize, Serialize, Debug, Clone)]
-struct YelpBusiness {
-    #[dynomite(partition_key)]
-    id: String,
-    alias: String,
-    name: String,
-    image_url: String,
-    url: String,
-    categories: Vec<YelpCategory>,
-    rating: f32,
-}
+use std::error::Error;
 
 #[derive(Serialize)]
 struct CustomOutput {}
@@ -54,7 +42,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-
 fn my_handler(
     e: rusoto_dynamodbstreams::GetRecordsOutput,
     _c: Context,
@@ -62,9 +49,12 @@ fn my_handler(
     let es_user = std::env::var("ES_USER").unwrap();
     let es_pass = std::env::var("ES_PASS").unwrap();
     let transport = TransportBuilder::new(SingleNodeConnectionPool::new(
-        Url::parse("https://vpc-yelp-restaurants-afhintr5ppa3f4vhraxvlhmvti.us-east-2.es.amazonaws.com").unwrap()
+        Url::parse(
+            "https://vpc-yelp-restaurants-afhintr5ppa3f4vhraxvlhmvti.us-east-2.es.amazonaws.com",
+        )
+        .unwrap(),
     ))
-        .auth(Credentials::Basic(es_user, es_pass))
+    .auth(Credentials::Basic(es_user, es_pass))
     .build()
     .unwrap();
     let client = Elasticsearch::new(transport);

@@ -1,3 +1,4 @@
 .DS_Store
 yelp-scraper/target
 dynamodb-to-elasticsearch/target
+shared-types/target

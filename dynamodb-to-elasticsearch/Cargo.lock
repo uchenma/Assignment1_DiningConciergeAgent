@@ -392,16 +392,12 @@ dependencies = [
  "dynomite",
  "elasticsearch",
  "futures 0.3.5",
- "itertools",
  "lambda_runtime",
  "log",
- "ratelimit",
- "reqwest",
- "rusoto_core",
- "rusoto_credential",
  "rusoto_dynamodbstreams",
  "serde",
  "serde_json",
+ "shared-types",
  "simple-error",
  "simple_logger",
  "tokio 0.2.22",
@@ -915,15 +911,6 @@ name = "ipnet"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "47be2f14c678be2fdcab04ab1171db51b2762ce6f0a8ee87c8dd4a04ed216135"
-
-[[package]]
-name = "itertools"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "284f18f85651fe11e8a991b2adb42cb078325c996ed026d994719efcfca1d54b"
-dependencies = [
- "either",
-]
 
 [[package]]
 name = "itoa"
@@ -1510,12 +1497,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ratelimit"
-version = "0.4.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c4777eb47471c2a42bee8b553b22b8e5c496f657dc6f8b8e29bd69662f31e7e"
-
-[[package]]
 name = "redox_syscall"
 version = "0.1.57"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1868,6 +1849,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "shared-types"
+version = "0.1.0"
+dependencies = [
+ "dynomite",
+ "serde",
+]
+
+[[package]]
 name = "shlex"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2172,7 +2161,6 @@ dependencies = [
  "mio",
  "mio-named-pipes",
  "mio-uds",
- "num_cpus",
  "pin-project-lite",
  "signal-hook-registry",
  "slab",
