@@ -50,7 +50,7 @@ fn my_handler(
     let es_pass = std::env::var("ES_PASS").unwrap();
     let transport = TransportBuilder::new(SingleNodeConnectionPool::new(
         Url::parse(
-            "https://vpc-yelp-restaurants-afhintr5ppa3f4vhraxvlhmvti.us-east-2.es.amazonaws.com",
+            "https://vpc-yelp-restaurants-new-lqjbzttd4y7u4nz7ljxcaccdsa.us-east-2.es.amazonaws.com",
         )
         .unwrap(),
     ))

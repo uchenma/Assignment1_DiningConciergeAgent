@@ -36,28 +36,34 @@ public class SqsPoller implements RequestHandler<Empty, String> {
 
     @Override
     public String handleRequest(Empty event, Context context) {
-        try {
         final AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
-        List<Message> messages = sqs.receiveMessage((new ReceiveMessageRequest())
-                .withQueueUrl(QUEUE_URL)
-                .withMaxNumberOfMessages(1)).getMessages();
+        List<Message> messages = sqs
+                .receiveMessage((new ReceiveMessageRequest()).withQueueUrl(QUEUE_URL).withMaxNumberOfMessages(1))
+                .getMessages();
+        System.out.println("Number of messages: " + Integer.toString(messages.size()));
+
         AWSLambda awsLambda = AWSLambdaClientBuilder.standard().withRegion(Regions.US_EAST_2).build();
         for (Message message : messages) {
             InvokeRequest invokeRequest = new InvokeRequest().withFunctionName("restaurant-request-completer")
                     .withPayload(message.getBody());
             InvokeResult invokeResult = awsLambda.invoke(invokeRequest);
             String ans = new String(invokeResult.getPayload().array(), StandardCharsets.UTF_8);
-            TextMessageToSend info = objectMapper.readValue(ans, TextMessageToSend.class);
-            AmazonSNS sns = /* defaultClient does not support region */ (new AmazonSNSClient())
-                    .withRegion(Regions.US_EAST_1);
-            sns.publish((new PublishRequest()).withPhoneNumber(info.phonenumber).withMessage(info.message));
-            sqs.deleteMessage(QUEUE_URL, message.getReceiptHandle());
+            try {
+                TextMessageToSend info = objectMapper.readValue(ans, TextMessageToSend.class);
+                AmazonSNS sns = /* defaultClient does not support region */ (new AmazonSNSClient())
+                        .withRegion(Regions.US_EAST_1);
+               System.out.println("Sending text to " + info.phonenumber);
+              System.out.println(info.message);
+
+                sns.publish((new PublishRequest()).withPhoneNumber(info.phonenumber).withMessage(info.message));
+                sqs.deleteMessage(QUEUE_URL, message.getReceiptHandle());
+            } catch (Exception e) {
+                System.out.println(ans);
+
+                throw new RuntimeException(e);
+            }
         }
         return "";
-        }
-        catch (Exception e) {
-            throw new RuntimeException( e);
-        }
 
     }
 
