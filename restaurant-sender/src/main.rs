@@ -78,16 +78,16 @@ async fn my_handler(e: RestaurantRequest) -> Result<CustomOutput, HandlerError> 
             "query": {
                 "function_score": {
                     "query": {
-                        "match" : { "cuisine" : e.cuisine }
+                        "bool": {
+                            "must": [{
+                                "match": {
+                                    "cuisines": e.cuisine
+                                }
+                            }]
+                        }
                     },
                     "random_score": {}
                 }
-            }
-        } );
-    let payload = json!(
-        {
-            "query": {
-                "match" : { "cuisine" : e.cuisine }
             }
         } );
     let payload = payload.to_string();
@@ -108,28 +108,26 @@ async fn my_handler(e: RestaurantRequest) -> Result<CustomOutput, HandlerError> 
         .into_iter()
         .map(|hit| hit._source)
         .collect();
-    let data = futures::future::join_all(
-        hits.iter().map(async move |record| {
-            let client = rusoto_dynamodb::DynamoDbClient::new(Region::UsEast2);
-            let mut keyquery = std::collections::HashMap::new();
-            keyquery.insert(
-                "id".to_owned(),
-                AttributeValue {
-                    s: Some(record.dynamo_id.to_owned()),
-                    ..AttributeValue::default()
-                },
-            );
-            let result = client
-                .get_item(GetItemInput {
-                    key: keyquery,
-                    table_name: "yelp_data".to_string(),
-                    ..GetItemInput::default()
-                })
-                .await
-                .unwrap();
-            result.item.map(shared_types::YelpBusiness::from_attrs)
-        })
-    )
+    let data = futures::future::join_all(hits.iter().map(async move |record| {
+        let client = rusoto_dynamodb::DynamoDbClient::new(Region::UsEast2);
+        let mut keyquery = std::collections::HashMap::new();
+        keyquery.insert(
+            "id".to_owned(),
+            AttributeValue {
+                s: Some(record.dynamo_id.to_owned()),
+                ..AttributeValue::default()
+            },
+        );
+        let result = client
+            .get_item(GetItemInput {
+                key: keyquery,
+                table_name: "yelp_data".to_string(),
+                ..GetItemInput::default()
+            })
+            .await
+            .unwrap();
+        result.item.map(shared_types::YelpBusiness::from_attrs)
+    }))
     .await;
     println!("{:?}", data);
     Ok(CustomOutput {

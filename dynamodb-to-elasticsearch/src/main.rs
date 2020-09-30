@@ -67,16 +67,14 @@ async fn my_handler(
                 )
                 .unwrap();
                 let dynamo_id = record_data.id.to_owned();
-                let categories: Vec<_> = record_data.categories.iter().map(|category|
-                                                                    YelpBusinessEs {
-                                                                        id: format!("{}-{}", dynamo_id, category.alias),
-                                                                        dynamo_id: dynamo_id.to_owned(),
-                                                                        cuisine: category.title.to_owned(),
-                                                                    }
+                let cuisines: Vec<_> = record_data.categories.iter().map(|category|
+                                                                         category.title.to_owned()
                 ).collect();
-                futures::stream::iter(
-                    categories)
-                    .for_each_concurrent(1, async move|item| {
+                let item =                     YelpBusinessEs {
+                        id:  dynamo_id.to_owned(),
+                        dynamo_id: dynamo_id.to_owned(),
+                        cuisines: cuisines
+                    };
                         let creds = rusoto_credential::DefaultCredentialsProvider::new()
                             .unwrap()
                             .credentials()
@@ -99,7 +97,6 @@ async fn my_handler(
                         let buffer = response.buffer().await.unwrap();
                         let response = buffer.body_as_str();
                         println!("{}", response); 
-                    }).await
             }
             Some(weird) => println!("Unexpected: {}", weird),
         }

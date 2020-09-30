@@ -24,5 +24,5 @@ pub struct YelpBusiness {
 pub struct YelpBusinessEs {
     pub id: String,
     pub dynamo_id: String,
-    pub cuisine: String,
+    pub cuisines: Vec<String>,
 }
