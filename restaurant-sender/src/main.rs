@@ -25,7 +25,7 @@ struct RestaurantRequest {
     phonenumber: String,
     cuisine: String,
     num_people: String,
-    date: String,
+    date_and_time: String,
 }
 #[derive(Serialize, Deserialize)]
 struct CustomOutput {
@@ -159,7 +159,7 @@ async fn my_handler(e: RestaurantRequest) -> Result<CustomOutput, HandlerError> 
         phonenumber: e.phonenumber,
         message: format!(
             "Hello! Here are my {} restaurant suggestions for {}, for {}: {}. Enjoy your meal!",
-            e.cuisine, e.num_people, e.date, restaurant_suggestions_text
+            e.cuisine, e.num_people, e.date_and_time, restaurant_suggestions_text
         ),
     })
 }
