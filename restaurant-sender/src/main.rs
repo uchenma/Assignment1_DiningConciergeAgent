@@ -24,6 +24,8 @@ use std::error::Error;
 struct RestaurantRequest {
     phonenumber: String,
     cuisine: String,
+    num_people: String,
+    date: String,
 }
 #[derive(Serialize, Deserialize)]
 struct CustomOutput {
@@ -56,6 +58,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+fn format_address(address: &shared_types::YelpAddress) -> String {
+    format!("{}", address.address1)
+}
+
 async fn my_handler(e: RestaurantRequest) -> Result<CustomOutput, HandlerError> {
     use futures::stream::StreamExt;
     let creds = rusoto_credential::DefaultCredentialsProvider::new()
@@ -75,6 +81,8 @@ async fn my_handler(e: RestaurantRequest) -> Result<CustomOutput, HandlerError> 
     ));
     let payload = json!(
         {
+            "from" : 0,
+            "size" : 3,
             "query": {
                 "function_score": {
                     "query": {
@@ -126,13 +134,33 @@ async fn my_handler(e: RestaurantRequest) -> Result<CustomOutput, HandlerError> 
             })
             .await
             .unwrap();
-        result.item.map(shared_types::YelpBusiness::from_attrs)
+        result
+            .item
+            .map(shared_types::YelpBusiness::from_attrs)
+            .unwrap()
+            .unwrap()
     }))
     .await;
+    let restaurant_suggestions_text = data
+        .iter()
+        .enumerate()
+        .map(|(index, item)| {
+            format!(
+                "{}. {}, located at {}",
+                index,
+                item.name,
+                format_address(&item.location)
+            )
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
     println!("{:?}", data);
     Ok(CustomOutput {
         phonenumber: e.phonenumber,
-        message: "Hi".to_owned(),
+        message: format!(
+            "Hello! Here are my {} restaurant suggestions for {}, for {}: {}. Enjoy your meal!",
+            e.cuisine, e.num_people, e.date, restaurant_suggestions_text
+        ),
     })
 }
 fn my_handler_outer(e: RestaurantRequest, _c: Context) -> Result<CustomOutput, HandlerError> {
