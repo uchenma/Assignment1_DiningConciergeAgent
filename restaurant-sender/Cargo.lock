@@ -1569,6 +1569,8 @@ dependencies = [
  "lambda_runtime",
  "log",
  "rusoto_core",
+ "rusoto_credential",
+ "rusoto_dynamodb",
  "rusoto_sns",
  "serde",
  "serde_json",
