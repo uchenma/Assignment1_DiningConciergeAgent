@@ -1,13 +1,3 @@
 .DS_Store
-yelp-scraper/target
-dynamodb-to-elasticsearch/target
-dynamodb-to-elasticsearch/lambda.zip
-shared-types/target
-sqs-poller/target
-sqs-poller/dependency-reduced-pom.xml
-sqs-poller/.settings
-sqs-poller/.project
-sqs-poller/.classpath
-sqs-poller/README.htm
-restaurant-sender/target
-restaurant-sender/lambda.zip
+lambda.zip
+target

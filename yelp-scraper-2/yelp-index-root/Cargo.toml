@@ -1,0 +1,25 @@
+[package]
+name = "yelp-index-root"
+version = "0.1.0"
+authors = ["Nigel Schuster <nigel.schusters@googlemail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dynomite = "0.10.0"
+elasticsearch = "7.9.0-alpha.1"
+futures = "0.3.5"
+lambda_runtime = "0.2.1"
+log = "0.4.11"
+rusoto_sns = "0.45.0"
+rusoto_credential = "0.45.0"
+rusoto_core = "0.45.0"
+rusoto_dynamodb = "0.45.0"
+rusoto_sqs = "0.45.0"
+serde = {version = "1.0.116", features = ["derive"]}
+serde_json = "1.0.57"
+yelp-shared-types = { path = "../yelp-shared-types" }
+simple-error = "0.2.2"
+simple_logger = "1.9.0"
+tokio = { version = "0.2.22", features = ["full"] }

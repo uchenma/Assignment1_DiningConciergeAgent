@@ -10,13 +10,13 @@ pub struct YelpCategory {
 }
 #[derive(Attributes, Deserialize, Serialize, Debug, Clone)]
 pub struct YelpAddress {
-    city: String,
-    country: String,
+    // city: String,
+    // country: String,
     pub address1: String,
-    address2: String,
-    address3: String,
-    state: String,
-    zip_code: String,
+    // address2: String,
+    // address3: String,
+    // state: String,
+    // zip_code: String,
 }
 #[derive(Item, Deserialize, Serialize, Debug, Clone)]
 pub struct YelpBusiness {

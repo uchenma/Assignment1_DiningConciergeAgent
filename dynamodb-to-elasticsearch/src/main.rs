@@ -84,11 +84,11 @@ async fn my_handler(
                         let mut request = rusoto_core::signature::SignedRequest::new(
                             "PUT",
                             "es",
-                            &Region::UsEast2,
+                            &Region::UsEast1,
                             &format!("/yelp_restaurants/_doc/{}", &item.id),
                         );
                         request.set_content_type("application/json".to_owned());
-                        request.set_hostname(Some("vpc-yelp-restaurants-afhintr5ppa3f4vhraxvlhmvti.us-east-2.es.amazonaws.com".to_owned()));
+                        request.set_hostname(Some("vpc-yelp-restaurants-e5ebs6h5mdt6pbvf3lcphwpe5u.us-east-1.es.amazonaws.com".to_owned()));
                         request.set_payload(Some(serialized));
                         request.set_content_md5_header();
                         request.sign(&creds);

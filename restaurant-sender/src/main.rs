@@ -64,20 +64,20 @@ fn format_address(address: &shared_types::YelpAddress) -> String {
 
 async fn my_handler(e: CustomInput) -> Result<CustomOutput, HandlerError> {
     use futures::stream::StreamExt;
-    let sqs = rusoto_sqs::SqsClient::new(Region::UsEast2);
+    let sqs = rusoto_sqs::SqsClient::new(Region::UsEast1);
     let sns = rusoto_sns::SnsClient::new(Region::UsEast1);
     let sqs = &sqs;
     let sns = &sns;
     let messages = sqs
         .receive_message(ReceiveMessageRequest {
             max_number_of_messages: Some(1),
-            queue_url: "https://sqs.us-east-2.amazonaws.com/217015071650/yelp-restaurant-request"
+            queue_url: "https://sqs.us-east-1.amazonaws.com/217015071650/yelp-restaurant-request"
                 .to_owned(),
             ..ReceiveMessageRequest::default()
         })
         .await
         .unwrap();
-    futures::stream::iter(messages.messages.unwrap())
+    futures::stream::iter(messages.messages.unwrap_or(vec![]))
         .for_each_concurrent(1, async move |message| {
             let creds = rusoto_credential::DefaultCredentialsProvider::new()
                 .unwrap()
@@ -88,12 +88,12 @@ async fn my_handler(e: CustomInput) -> Result<CustomOutput, HandlerError> {
             let mut request = rusoto_core::signature::SignedRequest::new(
                 "GET",
                 "es",
-                &Region::UsEast2,
+                &Region::UsEast1,
                 "/yelp_restaurants/_search",
             );
             request.set_content_type("application/json".to_owned());
             request.set_hostname(Some(
-                "vpc-yelp-restaurants-afhintr5ppa3f4vhraxvlhmvti.us-east-2.es.amazonaws.com"
+                "vpc-yelp-restaurants-e5ebs6h5mdt6pbvf3lcphwpe5u.us-east-1.es.amazonaws.com"
                     .to_owned(),
             ));
             let payload = json!(
@@ -134,7 +134,7 @@ async fn my_handler(e: CustomInput) -> Result<CustomOutput, HandlerError> {
                 .map(|hit| hit._source)
                 .collect();
             let data = futures::future::join_all(hits.iter().map(async move |record| {
-                let client = rusoto_dynamodb::DynamoDbClient::new(Region::UsEast2);
+                let client = rusoto_dynamodb::DynamoDbClient::new(Region::UsEast1);
                 let mut keyquery = std::collections::HashMap::new();
                 keyquery.insert(
                     "id".to_owned(),
@@ -164,7 +164,7 @@ async fn my_handler(e: CustomInput) -> Result<CustomOutput, HandlerError> {
                 .map(|(index, item)| {
                     format!(
                         "{}. {}, located at {}",
-                        index,
+                        index + 1,
                         item.name,
                         format_address(&item.location)
                     )
@@ -183,18 +183,11 @@ async fn my_handler(e: CustomInput) -> Result<CustomOutput, HandlerError> {
             sqs.delete_message(
                 DeleteMessageRequest {
                     receipt_handle: message.receipt_handle.unwrap(),
-                    queue_url: "https://sqs.us-east-2.amazonaws.com/217015071650/yelp-restaurant-request"
+                    queue_url: "https://sqs.us-east-1.amazonaws.com/217015071650/yelp-restaurant-request"
                         .to_owned(),
                     ..DeleteMessageRequest::default()
                 }
             ).await.unwrap();
-            // CustomOutput {
-            //     phonenumber: e.phonenumber,
-            //     message: format!(
-            //         "Hello! Here are my {} restaurant suggestions for {}, for {}: {}. Enjoy your meal!",
-            //         e.cuisine, e.num_people, e.date_and_time, restaurant_suggestions_text
-            //     ),
-            // }
         })
         .await;
     Ok(CustomOutput {})
