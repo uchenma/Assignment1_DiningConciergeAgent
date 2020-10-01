@@ -1572,6 +1572,7 @@ dependencies = [
  "rusoto_credential",
  "rusoto_dynamodb",
  "rusoto_sns",
+ "rusoto_sqs",
  "serde",
  "serde_json",
  "shared-types",
@@ -1672,6 +1673,20 @@ name = "rusoto_sns"
 version = "0.45.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4158b69832c48c303e26c1eadc70e4bde54d29dc1a51f33983e1c556e3aff19e"
+dependencies = [
+ "async-trait",
+ "bytes 0.5.6",
+ "futures 0.3.5",
+ "rusoto_core",
+ "serde_urlencoded",
+ "xml-rs",
+]
+
+[[package]]
+name = "rusoto_sqs"
+version = "0.45.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fcd228a1b4ce3f3a40541ee8cef526ff3702b58a4779fb05c31e739174efda5e"
 dependencies = [
  "async-trait",
  "bytes 0.5.6",
