@@ -1,4 +1,5 @@
 var checkout = {};
+var id = Date.now().toString();
 
 $(document).ready(function() {
   var $messages = $('.messages-content'),
@@ -31,7 +32,8 @@ $(document).ready(function() {
       messages: [{
         type: 'unstructured',
         unstructured: {
-          text: message
+            text: message,
+            id: id
         }
       }]
     }, {});
