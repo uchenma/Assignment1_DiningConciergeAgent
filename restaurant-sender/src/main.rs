@@ -17,17 +17,10 @@ use rusoto_sns::{PublishInput, Sns, SnsClient};
 use rusoto_sqs::{DeleteMessageRequest, ReceiveMessageRequest, Sqs, SqsClient};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use shared_types::{YelpBusiness, YelpBusinessEs};
+use shared_types::{RestaurantRequest,YelpBusiness, YelpBusinessEs};
 use simple_logger;
 use std::error::Error;
 
-#[derive(Serialize, Deserialize)]
-struct RestaurantRequest {
-    phonenumber: String,
-    cuisine: String,
-    num_people: String,
-    date_and_time: String,
-}
 #[derive(Serialize, Deserialize)]
 struct CustomOutput {}
 #[derive(Serialize, Deserialize)]

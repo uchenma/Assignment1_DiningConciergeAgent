@@ -37,3 +37,11 @@ pub struct YelpBusinessEs {
     pub dynamo_id: String,
     pub cuisines: Vec<String>,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct RestaurantRequest {
+    pub phonenumber: String,
+    pub cuisine: String,
+    pub num_people: String,
+    pub date_and_time: String,
+}
