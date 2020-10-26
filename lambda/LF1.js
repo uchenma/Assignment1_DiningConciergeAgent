@@ -37,11 +37,12 @@ exports.handler = async (event) => {
         const slots = event.currentIntent.slots;
         
         if (slots.DiningDate){
-            // const today = new Date()
-            // const yesterday = new Date(today)
-            // yesterday.setDate(yesterday.getDate() - 1)
+            let inputDate = new Date(slots.DiningDate);
+            let inputTomorrow = new Date(inputDate);
+            inputTomorrow.setDate(inputTomorrow.getDate() + 1);
+            inputTomorrow.setHours(0,0,0,0);
             
-            if (new Date(slots.DiningDate) < new Date()){
+            if (inputTomorrow.getTime() < Date.now()){
                 slots.DiningDate = null
                 return {
                     "sessionAttributes": event.sessionAttributes,
