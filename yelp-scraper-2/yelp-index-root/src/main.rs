@@ -40,22 +40,28 @@ async fn my_handler(e: CustomInput) -> Result<CustomOutput, HandlerError> {
     let sqs = &sqs;
     let queries = futures::future::join_all(
         (vec![
+            "african",
             "american",
+            "asian",
             "chinese",
+            "ethiopian",
             "french",
             "german",
             "greek",
+            "indian",
             "italian",
             "japanese",
+            "korean",
             "mexican",
             "moroccan",
+            "polish",
             "spanish",
             "thai",
             "vietnamese",
         ])
         .into_iter()
         .map(|cuisine| yelp_shared_types::CuisineIndexRequest {
-            cuisine: cuisine.to_owned()
+            cuisine: cuisine.to_owned(),
         })
         .map(async move |request| {
             let request = serde_json::to_string(&request).unwrap();
