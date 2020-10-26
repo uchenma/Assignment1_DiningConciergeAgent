@@ -2,6 +2,5 @@
 
 ## Teammates ##
 
-Nigel Schuster (ns3158)
-Mavis Athene U Chen (mu2288)
+Nigel Schuster (ns3158) & Mavis Athene U Chen (mu2288)
 
